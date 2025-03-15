@@ -10,14 +10,14 @@
 - Network Analysis (Reverse DNS, ASN tapma, ASN Enumeration)  
 - Cloud Enumeration  
 
-**Qeyd:** Bir hədəf saytın nə qədər çox subdomaini əlimizdə olsa, bir o qədər zəiflik axtara biləcəyimiz yer sayı artar.  
+**Qeyd:** Bir hədəf saytın nə qədər çox subdomaini əlimizdə olsa bir o qədər zəiflik axtara biləcəyimiz yer sayi artar  
 
 ---
 
 ### **Passive Subdomain Enumeration**  
-Passive subdomain enumeration zamanı heç bir birbaşa sorğu hədəfə göndərilmir. Bunun əvəzinə, ictimai məlumat bazaları, sertifikat şəbəkələri və digər açıq mənbələrdən məlumat toplanır.  
+Passive subdomain enumeration zamanı heç bir birbaşa sorğu hədəfə göndərilmir.Bunun əvəzinə açıq mənbələrdən məlumat toplanır.  
 
-**Nümunə komandalar:**  
+**Komandalar:**  
 ```bash
 subfinder -d rapfame.app -silent -all -recursive -o subfinder_result.txt  
 
