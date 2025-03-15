@@ -10,116 +10,139 @@
 - Network Analysis (Reverse DNS, ASN tapma, ASN Enumeration)  
 - Cloud Enumeration  
 
-**Qeyd:** Bir hədəf saytın nə qədər çox subdomaini əlimizdə olsa bir o qədər zəiflik axtara biləcəyimiz yer sayi artar  
+**Qeyd:** Bir hədəf saytın nə qədər çox subdomaini əlimizdə olsa bir o qədər zəiflik axtara biləcəyimiz yer sayı artar.  
 
 ---
 
 ### **Passive Subdomain Enumeration**  
-Passive subdomain enumeration zamanı heç bir birbaşa sorğu hədəfə göndərilmir.Bunun əvəzinə açıq mənbələrdən məlumat toplanır.  
+Passive subdomain enumeration zamanı heç bir birbaşa sorğu hədəfə göndərilmir.Bunun əvəzinə açıq mənbələrdən məlumat toplanır
 
-**Komandalar:**  
+**Komanda 1:**  
 ```bash
-subfinder -d rapfame.app -silent -all -recursive -o subfinder_result.txt  
+subfinder -d target.com -silent -all -recursive -o subfinder_result.txt  
+```  
+**İzahat:** `subfinder` aləti vasitəsilə hədəfin subdomainləri passiv şəkildə toplanır.`-d` parametri ilə hədəf domain `-silent` parametri ilə yalnız nəticələr göstərilir `-all` parametri ilə bütün məlumat mənbələri yoxlanılır `-recursive` parametri ilə rekursiv axtarış edilir və nəticələr `subfinder_result.txt` faylına yazılır.  
 
-amass enum -passive -d rapfame.app -o amasspassive_result.txt  
+**Komanda 2:**  
+```bash
+amass enum -passive -d target.com -o amasspassive_result.txt  
+```  
+**İzahat:** `amass` aləti ilə passiv şəkildə subdomainlər toplanır. `-passive` parametri ilə heç bir birbaşa sorğu göndərilmir, `-d` parametri ilə hədəf domain qeyd edilir və nəticələr `amasspassive_result.txt` faylına yazılır.  
 
-curl -s "https://crt.sh/?q=%25.rapfame.app&output=json" | jq -r '.[].name_value' | sed 's/\*\.//g' | anew crtsh_result.txt  
+**Komanda 3:**  
+```bash
+curl -s "https://crt.sh/?q=%25.target.com&output=json" | jq -r '.[].name_value' | sed 's/\*\.//g' | anew crtsh_result.txt  
+```  
+**İzahat:** `crt.sh` saytından SSL sertifikatları vasitəsilə subdomainlər toplanır.`curl` ilə sorğu göndərilir `jq` ilə JSON məlumatları parse edilir `sed` ilə lazımsız simvollar təmizlənir və nəticələr `crtsh_result.txt` faylına yazılır.  
 
+**Komanda 4:**  
+```bash
 github-subdomains -d target.com -t github_api_token -o github_subs.txt  
 ```  
-
-**Əlavə Məlumat:**  
-Passive enumeration zamanı ən çox istifadə olunan vasitələr arasında `subfinder`, `amass`, `crt.sh` və `github-subdomains` kimi alətlər var. Bu alətlər vasitəsilə hədəfin subdomainləri əsasən açıq mənbələrdən toplanır. Bu üsul hədəfə heç bir təsir göstərmədiyi üçün təhlükəsiz hesab olunur.  
+**İzahat:** `github-subdomains` aləti ilə GitHub-da olan açıq mənbə kodlarından subdomainlər toplanır.`-d` parametri ilə hədəf domain `-t` parametri ilə GitHub API tokeni qeyd edilir və nəticələr `github_subs.txt` faylına yazılır.  
 
 ---
 
 ### **Active Subdomain Enumeration**  
-Active enumeration zamanı hədəfə birbaşa sorğular göndərilir. Bu üsul daha effektiv olsa da, hədəfin diqqətini cəlb edə bilər.  
+Active enumeration zamanı hədəfə birbaşa sorğular göndərilir.Bu üsul daha effektiv olsa da hədəfin diqqətini cəlb edə bilər
 
-**Nümunə komandalar:**  
+**Komanda 1:**  
 ```bash
-cat /usr/share/SecLists/Discovery/DNS/subdomain-top1million-5000.txt | sed 's/$/.rapfame.app/' > wordlist.txt  
-
-massdns -r /home/silverx/Downloads/massdns/lists/resolvers.txt -t A -o S -w massdns_result.txt wordlist.txt  
-
-shuffledns -d rapfame.app -l all_subs.txt -r /home/silverx/Downloads/shuffledns/tests/resolvers.txt -o active_subs.txt -mode resolve  
-
-dnsx -l active_subs.txt -resp -o resolved_subs.txt  
-
-ffuf -u https://FUZZ.rapfame.app -w subdomains.txt -t 50 -mc 200,403 -o ffuf_result.txt  
+cat /usr/share/SecLists/Discovery/DNS/subdomain-top1million-5000.txt | sed 's/$/.target.com/' > wordlist.txt  
 ```  
+**İzahat:** `SecLists` kitabxanasından subdomainlər üçün wordlist hazırlanır.`sed` ilə hər bir sətirin sonuna hədəf domain əlavə edilir və nəticələr `wordlist.txt` faylına yazılır.  
 
-**Əlavə Məlumat:**  
-Active enumeration zamanı `massdns`, `shuffledns`, `dnsx` və `ffuf` kimi alətlər geniş istifadə olunur. Bu alətlər vasitəsilə hədəfin DNS qeydləri tərəfli şəkildə yoxlanılır və subdomainlər aşkar edilir. Bu üsul daha dəqiq nəticələr versə də, hədəfin müdafiə mexanizmlərini aktivləşdirə bilər.  
+**Komanda 2:**  
+```bash
+massdns -r /home/silverx/Downloads/massdns/lists/resolvers.txt -t A -o S -w massdns_result.txt wordlist.txt  
+```  
+**İzahat:** `massdns` aləti ilə DNS sorğuları göndərilir. `-r` parametri ilə DNS resolverləri qeyd edilir, `-t A` ilə A qeydləri soruşulur, `-o S` ilə sadə formatda nəticələr göstərilir və nəticələr `massdns_result.txt` faylına yazılır.  
+
+**Komanda 3:**  
+```bash
+shuffledns -d target.com -l all_subs.txt -r /home/silverx/Downloads/shuffledns/tests/resolvers.txt -o active_subs.txt -mode resolve  
+```  
+**İzahat:** `shuffledns` aləti ilə subdomainlər yoxlanılır. `-d` parametri ilə hədəf domain, `-l` parametri ilə subdomain siyahısı, `-r` parametri ilə DNS resolverləri qeyd edilir və nəticələr `active_subs.txt` faylına yazılır.  
+
+**Komanda 4:**  
+```bash
+dnsx -l active_subs.txt -resp -o resolved_subs.txt  
+```  
+**İzahat:** `dnsx` aləti ilə subdomainlər yoxlanılır və cavab verənlər ayrılır. `-l` parametri ilə subdomain siyahısı, `-resp` parametri ilə cavab verənlər seçilir və nəticələr `resolved_subs.txt` faylına yazılır.  
+
+**Komanda 5:**  
+```bash
+ffuf -u https://FUZZ.target.com -w subdomains.txt -t 50 -mc 200,403 -o ffuf_result.txt  
+```  
+**İzahat:** `ffuf` aləti ilə subdomainlər üzrə fuzzing edilir. `-u` parametri ilə URL formatı, `-w` parametri ilə wordlist qeyd edilir, `-t` parametri ilə thread sayı, `-mc` parametri ilə cavab kodları seçilir və nəticələr `ffuf_result.txt` faylına yazılır.  
 
 ---
 
 ### **URL Discovery**  
-URL discovery mərhələsində hədəfin keçmişdə istifadə etdiyi URL-lər və mövcud endpointlər aşkar edilir.  
+URL discovery mərhələsində hədəfin keçmişdə istifadə etdiyi URL-lər və mövcud endpointlər aşkar edilir
 
-**Nümunə komandalar:**  
+**Komanda 1:**  
 ```bash
-gau target.repfame.app | anew target_gauresults.txt  
-
-waybackurls target.rapfame.app | anew target_waybackurlsresults.txt  
-
-katana -u target.rapfame.app -silent -jc -o target_katanaresult.txt  
-
-echo "https://target.rapfame.app" | hakrawler -depth 2 -plain -js -out target_hakrawlerresults.txt  
+gau target.com | anew target_gauresults.txt  
 ```  
+**İzahat:** `gau` aləti ilə hədəfin keçmişdə istifadə etdiyi URL-lər toplanır. Nəticələr `target_gauresults.txt` faylına yazılır.  
 
-**Əlavə Məlumat:**  
-URL discovery zamanı `gau`, `waybackurls`, `katana` və `hakrawler` kimi alətlər geniş istifadə olunur. Bu alətlər vasitəsilə hədəfin keçmişdə istifadə etdiyi URL-lər, JavaScript faylları və digər endpointlər aşkar edilir. Bu məlumatlar zəifliklərin tapılması üçün əsas mənbə ola bilər.  
+**Komanda 2:**  
+```bash
+waybackurls target.com | anew target_waybackurlsresults.txt  
+```  
+**İzahat:** `waybackurls` aləti ilə Wayback Machine-dən URL-lər toplanır. Nəticələr `target_waybackurlsresults.txt` faylına yazılır.  
+
+**Komanda 3:**  
+```bash
+katana -u target.com -silent -jc -o target_katanaresult.txt  
+```  
+**İzahat:** `katana` aləti ilə hədəfin mövcud endpointləri aşkar edilir. `-u` parametri ilə hədəf URL, `-silent` parametri ilə yalnız nəticələr göstərilir, `-jc` parametri ilə JavaScript faylları yoxlanılır və nəticələr `target_katanaresult.txt` faylına yazılır.  
+
+**Komanda 4:**  
+```bash
+echo "https://target.com" | hakrawler -depth 2 -plain -js -out target_hakrawlerresults.txt  
+```  
+**İzahat:** `hakrawler` aləti ilə hədəfin URL-ləri kəşf edilir. `-depth` parametri ilə dərinlik, `-plain` parametri ilə sadə format, `-js` parametri ilə JavaScript faylları yoxlanılır və nəticələr `target_hakrawlerresults.txt` faylına yazılır.  
 
 ---
 
 ### **Network Analysis**  
 Network analysis mərhələsində hədəfin şəbəkə quruluşu, DNS qeydləri və ASN məlumatları təhlil edilir.  
 
-**Reverse DNS:**  
+**Komanda 1 (Reverse DNS):**  
 ```bash
 dnsx -ptr -l resolved_subs.txt -resp-only -o reverse_dns.txt  
 ```  
+**İzahat:** `dnsx` aləti ilə PTR sorğuları vasitəsilə IP ünvanlarına uyğun domainlər tapılır. Nəticələr `reverse_dns.txt` faylına yazılır.  
 
-**ASN Tapma:**  
-ASN tapmazdan əvvəl hədəfin origin IP ünvanını öyrənmək lazımdır. Bunun üçün aşağıdakı komandadan istifadə edə bilərsiniz:  
+**Komanda 2 (ASN Tapma):**  
 ```bash
 curl https://ipinfo.io/ip_address  
 ```  
+**İzahat:** `curl` komutu ile ip_address yazdigm yere hedef saytin origin ip-sini yazib ASN oyrenirsiz veyaxud origin ip-ye whois ata bilersiniz 
 
-**ASN Enumeration:**  
+**Komanda 3 (ASN Enumeration):**  
 ```bash
 amass intel -asn <ASN_NUMBER> -o asn_results.txt  
 ```  
-
-**Əlavə Məlumat:**  
-Network analysis zamanı hədəfin şəbəkə infrastrukturu dərin şəkildə təhlil edilir. Reverse DNS sorğuları vasitəsilə hədəfin IP ünvanlarına uyğun domainlər tapılır. ASN tapma və enumeration isə hədəfin şəbəkə provayderi və digər əlaqəli məlumatlar haqqında məlumat verir.  
+**İzahat:** `amass` aləti ilə ASN nömrəsinə uyğun şəbəkə məlumatları toplanır. Nəticələr `asn_results.txt` faylına yazılır.  
 
 ---
 
 ### **Cloud Enumeration**  
 Cloud enumeration zamanı hədəfin bulud əsaslı xidmətləri və konfiqurasiyaları təhlil edilir.  
 
-**Nümunə komanda:**  
+**Komanda 1:**  
 ```bash
-cloud_enum -k rapfame.app -f cenum_result.txt  
+cloud_enum -k target.com -f cenum_result.txt  
 ```  
-
-**Əlavə Məlumat:**  
-Bulud əsaslı xidmətlər müasir dövrdə geniş yayıldığı üçün bu mərhələ xüsusi əhəmiyyət daşıyır. `cloud_enum` kimi alətlər vasitəsilə hədəfin AWS, Azure, Google Cloud kimi bulud provayderlərində olan resursları aşkar edilir. Bu resurslar zəifliklərin tapılması üçün potensial mənbə ola bilər.  
+**İzahat:** `cloud_enum` aləti ilə hədəfin bulud resursları aşkar edilir. `-k` parametri ilə açar söz, `-f` parametri ilə nəticələr faylı qeyd edilir.  
 
 ---
 
 ### **Yekun**  
-Bug Bounty üçün reconnaissance mərhələsi hər zaman ən vacib mərhələlərdən biridir. Bu mərhələdə toplanan məlumatlar zəifliklərin tapılması üçün əsas rol oynayır. Passive və active üsulların düzgün kombinasiyası ilə hədəf haqqında maksimum məlumat toplamaq mümkündür. Həmçinin, network analysis və cloud enumeration kimi mərhələlər vasitəsilə hədəfin şəbəkə və bulud infrastrukturu dərin şəkildə təhlil edilə bilər.  
-
-**Əlavə Tövsiyələr:**  
-- Hər bir mərhələdə toplanan məlumatları düzgün şəkildə sənədləşdirin.  
-- Fərqli alətlərin kombinasiyası ilə daha dəqiq nəticələr əldə edin.  
-- Hədəfin müdafiə mexanizmlərini aktivləşdirməmək üçün sorğuları diqqətlə planlaşdırın.  
-
-Bu metodologiya ilə hədəf haqqında maksimum məlumat toplayaraq, zəifliklərin aşkar edilməsi prosesini asanlaşdıra bilərsiniz. Təşəkkürlər!  
+Bu part-1 oldu , Destek olunsa part 2de yazilacaq.Tesekkurler
 
 ---  
 **Yazar:** SilverX  
-**Tarix:** 2025
