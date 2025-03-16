@@ -52,6 +52,7 @@ cat *.txt | sort -u > all_subs.txt
 cat all_subs.txt | httpx -silent -title -o live_subdomains.txt
 ```  
 **İzahat:** `Canli subdomainleri ayirib basqa txt faylina yaziriq
+
 ---
 
 
