@@ -41,7 +41,20 @@ github-subdomains -d target.com -t github_api_token -o github_subs.txt
 ```  
 **İzahat:** `github-subdomains` aləti ilə GitHub-da olan açıq mənbə kodlarından subdomainlər toplanır.`-d` parametri ilə hədəf domain `-t` parametri ilə GitHub API tokeni qeyd edilir və nəticələr `github_subs.txt` faylına yazılır.  
 
+**Komanda 5:**  
+```bash
+cat *.txt | sort -u > all_subs.txt
+```  
+**İzahat:** `butun subdomainler eyni faylda toplanir sort -u  emri ile eyni subdomainlerin yazilmamasini temin edirik
+
+**Komanda 7:**  
+```bash
+cat all_subs.txt | httpx -silent -title -o live_subdomains.txt
+```  
+**İzahat:** `Canli subdomainleri ayirib basqa txt faylina yaziriq
 ---
+
+
 
 ### **Active Subdomain Enumeration**  
 Active enumeration zamanı hədəfə birbaşa sorğular göndərilir.Bu üsul daha effektiv olsa da hədəfin diqqətini cəlb edə bilər
