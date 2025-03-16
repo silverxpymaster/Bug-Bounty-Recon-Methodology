@@ -158,4 +158,4 @@ cloud_enum -k target.com -f cenum_result.txt
 Bu part-1 oldu , Destek olunsa part 2de yazilacaq.Tesekkurler
 
 ---  
-**Yazar:** SilverX  
+**Author:** SilverX  
